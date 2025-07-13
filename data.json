@@ -1,0 +1,35 @@
+[
+    {
+        "name": "birthday",
+        "date": "2024-08-03",
+        "desc": "veags",
+        "location": "delhi",
+        "budget": "60000",
+        "completed": false,
+        "expenses": [],
+        "people": [],
+        "rating": 0
+    },
+    {
+        "name": "farewell",
+        "date": "3034-05-04",
+        "desc": "fun",
+        "location": "delhi",
+        "budget": "40000",
+        "completed": false,
+        "expenses": [],
+        "people": [],
+        "rating": 0
+    },
+    {
+        "name": "confrence",
+        "date": "2023-03-23",
+        "desc": "urgent",
+        "location": "pune",
+        "budget": "4000",
+        "completed": false,
+        "expenses": [],
+        "people": [],
+        "rating": 0
+    }
+]
