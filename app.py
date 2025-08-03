@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
 import os
+import uuid
+
 
 app = Flask(__name__)
 CORS(app)
@@ -35,6 +37,9 @@ def get_events():
 @app.route('/api/events', methods=['POST'])
 def create_event():
     data = request.get_json()
+    if not data.get("name"):  # Example required field
+        return jsonify({"error": "Missing 'name' field"}), 400
+    data['id'] = str(uuid.uuid4())
     events.append(data)
     save_to_file()
     return jsonify({"message": "Event added!", "event": data}), 201
@@ -42,27 +47,33 @@ def create_event():
 # -------------------------
 # DELETE event by index
 # -------------------------
-@app.route('/api/events/<int:index>', methods=['DELETE'])
-def delete_event(index):
-    if 0 <= index < len(events):
-        deleted = events.pop(index)
+@app.route('/api/events/<string:id>', methods=['DELETE'])
+def delete_event(id):
+    global events
+    event = next((e for e in events if e['id'] == id), None)
+    if event:
+        
+        events = [e for e in events if e['id'] != id]
         save_to_file()
-        return jsonify({"message": "Deleted!", "event": deleted})
+        return jsonify({"message": "Deleted!", "event": event})
     else:
-        return jsonify({"error": "Invalid index"}), 404
+        return jsonify({"error": "Event not found"}), 404
 
-# -------------------------
-# PUT update by index (for toggle complete & edit)
-# -------------------------
-@app.route('/api/events/<int:index>', methods=['PUT'])
-def update_event(index):
-    if 0 <= index < len(events):
-        events[index] = request.get_json()
-        save_to_file()
-        return jsonify({"message": "Updated!", "event": events[index]})
-    else:
-        return jsonify({"error": "Invalid index"}), 404
+@app.route('/api/events/<string:id>', methods=['PUT'])
+def update_event(id):
+    global events
+    updated_data = request.get_json()
+
+    for i, e in enumerate(events):
+        if e['id'] == id:
+            # Preserve the id, overwrite other fields
+            updated_data['id'] = id
+            events[i] = updated_data
+            save_to_file()
+            return jsonify({"message": "Updated!", "event": updated_data})
+
+    return jsonify({"error": "Event not found"}), 404
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
+    app.run(debug=True)  
